@@ -1,0 +1,13 @@
+language: php
+php:
+  - '7.3'
+  - '7.4'
+
+install:
+  - composer install
+
+script:
+  - vendor/bin/codecept run
+  - vendor/bin/phpcs src/ --standard=ruleset.xml
+  - vendor/bin/phpcs tests/ --standard=ruleset.xml
+  - vendor/bin/phpstan analyze -l 7 src/
