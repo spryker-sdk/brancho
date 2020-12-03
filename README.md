@@ -1,5 +1,10 @@
 # Brancho
 
+[![Build Status](https://github.com/spryker-sdk/brancho/workflows/CI/badge.svg?branch=master)](https://github.com/spryker-sdk/brancho/actions?query=workflow%3ACI+branch%3Amaster)
+[![codecov](https://codecov.io/gh/spryker-sdk/brancho/branch/master/graph/badge.svg?token=L1thFB9nOG)](https://codecov.io/gh/spryker-sdk/brancho)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg)](https://php.net/)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat)](https://phpstan.org/)
+
 Brancho is a tool which helps to create branches with a defined naming convention.
 
 ## Installation
@@ -11,15 +16,10 @@ Brancho is a tool which helps to create branches with a defined naming conventio
 
 After the installation you will need to configure brancho. The default configuration file is named `.brancho`.
 
-`vendor/bin/brancho init` will create a .brancho.local file where you can configure e.g. credentials
 
-### Pattern
+### Resolver
 
-Here you describe how your branch name should look like. In the pattern you can use placeholders e.g. `{resolverName}` which are filled with the result of the configured resolvers.
-
-### Resolvers
-
-Resolvers are used to resolve values for your placeholders. The result of the resolver is than mapped into the configured pattern. A resolver can receive information from anywhere.
+Resolvers are used to resolve branch names. A resolver can receive information from anywhere.
 To build your own resolver you need to implement the `\Brancho\Resolver\ResolverInterface`. You will then have access to :
 
 - `\Symfony\Component\Console\Input\InputInterface`
@@ -30,10 +30,7 @@ Symfony's interfaces can be used to retrieve input data or to ask for any user i
 
 Through the `\Brancho\Context\ContextInterface` you get access to the configuration and to the configured filters.
 
+
 ### Filters
 
-Filters are used to filter user input into a normalized format. Think of a user input which is copied from somewhere e.g. a Ticket name or a short description. Usually these contain whitespaces and capital letters which are not allowed in git branch names.
-
-
-
-
+Filters are used to filter user input into a normalized format. Think of a user input which is copied from somewhere e.g. an issue name or a short description. Usually these contain whitespaces and capital letters which are not allowed in git branch names.

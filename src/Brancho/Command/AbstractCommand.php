@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Copyright © 2019-present Spryker Systems GmbH. All rights reserved.
+ * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
+ */
+
 namespace Brancho\Command;
 
 use Brancho\BranchoFactory;
@@ -11,12 +16,12 @@ class AbstractCommand extends Command
     protected const CODE_ERROR = 1;
 
     /**
-     * @var BranchoFactory|null
+     * @var \Brancho\BranchoFactory|null
      */
     protected $factory;
 
     /**
-     * @param BranchoFactory $factory
+     * @param \Brancho\BranchoFactory $factory
      *
      * @return void
      */

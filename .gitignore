@@ -39,3 +39,4 @@ tests/_support/_generated/
 tests/_data/home/*
 
 .brancho.local
+!tests/_data/.brancho.local

@@ -1,17 +1,18 @@
 <?php
 
+/**
+ * Copyright © 2019-present Spryker Systems GmbH. All rights reserved.
+ * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
+ */
+
 namespace Brancho\Config;
 
 use Brancho\Config\Reader\ConfigReaderInterface;
-use Brancho\Resolver\DescriptionResolver;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class Config implements ConfigInterface
 {
-    public const PATTERN = 'pattern';
-    public const RESOLVERS = 'resolvers';
+    public const RESOLVER = 'resolver';
     public const FILTERS = 'filters';
-    public const JIRA = 'jira';
 
     /**
      * @var array
@@ -19,12 +20,12 @@ class Config implements ConfigInterface
     protected $config;
 
     /**
-     * @var ConfigReaderInterface
+     * @var \Brancho\Config\Reader\ConfigReaderInterface
      */
     protected $configReader;
 
     /**
-     * @param ConfigReaderInterface $configReader
+     * @param \Brancho\Config\Reader\ConfigReaderInterface $configReader
      */
     public function __construct(ConfigReaderInterface $configReader)
     {
@@ -42,7 +43,7 @@ class Config implements ConfigInterface
             $config = $this->getRootConfiguration($pathToConfig);
             $config = $this->mergeLocalConfigurations($pathToConfig, $config);
 
-            $this->config = $this->getOptionResolver()->resolve($config);
+            $this->config = $config;
         }
 
         return $this->config;
@@ -72,48 +73,13 @@ class Config implements ConfigInterface
      */
     protected function mergeLocalConfigurations(string $pathToConfig, array $config): array
     {
-        $localConfigurationPaths = [
-            dirname($pathToConfig) . '/.brancho.local',
-            $this->getHomeDirectory() . '/brancho/.brancho.local',
-        ];
+        $localConfiguration = dirname($pathToConfig) . '/.brancho.local';
 
-        foreach ($localConfigurationPaths as $localConfigurationPath) {
-            if (file_exists($localConfigurationPath)) {
-                $localConfig = $this->configReader->read($localConfigurationPath);
-                $config = array_merge($config, $localConfig);
-            }
+        if (file_exists($localConfiguration)) {
+            $localConfig = $this->configReader->read($localConfiguration);
+            $config = array_merge($config, $localConfig);
         }
 
         return $config;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getHomeDirectory(): string
-    {
-        return (string)getenv('HOME');
-    }
-
-    /**
-     * @return OptionsResolver
-     */
-    private function getOptionResolver(): OptionsResolver
-    {
-        $optionResolver = new OptionsResolver();
-        $optionResolver->setDefaults([
-            static::PATTERN => '{description}',
-            static::RESOLVERS => [
-                '{description}' => DescriptionResolver::class,
-            ],
-            static::FILTERS => [],
-            static::JIRA => [
-                'host' => '',
-                'username' => '',
-                'password' => '',
-            ],
-        ]);
-
-        return $optionResolver;
     }
 }

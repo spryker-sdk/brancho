@@ -2,7 +2,3 @@ resolver: \Brancho\Resolver\JiraResolver
 filters:
   - \Brancho\Filter\Slugify
 
-jira:
-    host: jira-host.com
-    username: brancho
-    password: 8r4nch0

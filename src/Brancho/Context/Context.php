@@ -1,7 +1,13 @@
 <?php
 
+/**
+ * Copyright © 2019-present Spryker Systems GmbH. All rights reserved.
+ * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
+ */
+
 namespace Brancho\Context;
 
+use Laminas\Filter\FilterChain;
 use Laminas\Filter\FilterInterface;
 
 class Context implements ContextInterface
@@ -12,7 +18,7 @@ class Context implements ContextInterface
     protected $config;
 
     /**
-     * @var FilterInterface|null
+     * @var \Laminas\Filter\FilterInterface|null
      */
     protected $filter;
 
@@ -21,7 +27,7 @@ class Context implements ContextInterface
      */
     public function getConfig(): array
     {
-        return $this->config;
+        return $this->config ?? [];
     }
 
     /**
@@ -35,15 +41,15 @@ class Context implements ContextInterface
     }
 
     /**
-     * @return FilterInterface
+     * @return \Laminas\Filter\FilterInterface
      */
     public function getFilter(): FilterInterface
     {
-        return $this->filter;
+        return $this->filter ?? new FilterChain();
     }
 
     /**
-     * @param FilterInterface $filter
+     * @param \Laminas\Filter\FilterInterface $filter
      *
      * @return void
      */

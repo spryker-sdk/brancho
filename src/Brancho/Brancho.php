@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Copyright © 2019-present Spryker Systems GmbH. All rights reserved.
+ * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
+ */
+
 namespace Brancho;
 
 use Brancho\Command\BranchBuilderCommand;
@@ -7,6 +12,7 @@ use Brancho\Config\Config;
 use Brancho\Config\ConfigInterface;
 use Brancho\Context\Context;
 use Brancho\Resolver\AbstractResolver;
+use Brancho\Resolver\ConfigurableResolverInterface;
 use Brancho\Resolver\ResolverInterface;
 use Laminas\Filter\FilterChain;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,18 +26,18 @@ class Brancho
     protected $resolvedElements = [];
 
     /**
-     * @var ConfigInterface
+     * @var \Brancho\Config\ConfigInterface
      */
     protected $config;
 
     /**
-     * @var BranchoFactory
+     * @var \Brancho\BranchoFactory
      */
     protected $factory;
 
     /**
-     * @param ConfigInterface $config
-     * @param BranchoFactory $factory
+     * @param \Brancho\Config\ConfigInterface $config
+     * @param \Brancho\BranchoFactory $factory
      */
     public function __construct(ConfigInterface $config, BranchoFactory $factory)
     {
@@ -40,32 +46,26 @@ class Brancho
     }
 
     /**
-     * @return string
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return array|null
      */
-    public function resolveBranchName(InputInterface $input, OutputInterface $output): string
+    public function resolveBranchNames(InputInterface $input, OutputInterface $output): ?array
     {
         $config = $this->loadConfig($this->getConfigPath($input));
-
-        $pattern = $config[Config::PATTERN];
 
         $context = new Context();
         $context->setConfig($config);
         $context->setFilter($this->getFilter($config));
 
-        preg_match_all('/{.*?}/', $pattern, $matches, PREG_PATTERN_ORDER);
+        $resolver = $this->getResolver($config);
 
-        $resolvedParts = [];
-
-        foreach ($matches[0] as $match) {
-            $resolver = $this->getResolverByIdentifier($match, $config);
-            $resolvedParts[$match] = $resolver->resolve($input, $output, $context);
-        }
-
-        return str_replace(array_keys($resolvedParts), array_values($resolvedParts), $pattern);
+        return $resolver->resolve($input, $output, $context);
     }
 
     /**
-     * @param InputInterface $input
+     * @param \Symfony\Component\Console\Input\InputInterface $input
      *
      * @return string
      */
@@ -88,17 +88,23 @@ class Brancho
     }
 
     /**
-     * @param string $resolverIdentifier
      * @param array $config
      *
-     * @return ResolverInterface
+     * @return \Brancho\Resolver\ResolverInterface
      */
-    protected function getResolverByIdentifier(string $resolverIdentifier, array $config): ResolverInterface
+    protected function getResolver(array $config): ResolverInterface
     {
-        $resolver = new $config[Config::RESOLVERS][str_replace(['{', '}'], '', $resolverIdentifier)]();
+        $resolver = new $config[Config::RESOLVER]();
 
         if ($resolver instanceof AbstractResolver) {
             $resolver->setFactory($this->factory);
+        }
+
+        if ($resolver instanceof ConfigurableResolverInterface) {
+            $decoratedResolver = $this->factory->createResolverDecorator();
+            $decoratedResolver->setResolver($resolver);
+
+            return $decoratedResolver;
         }
 
         return $resolver;
@@ -107,7 +113,7 @@ class Brancho
     /**
      * @param array $config
      *
-     * @return FilterChain
+     * @return \Laminas\Filter\FilterChain
      */
     protected function getFilter(array $config): FilterChain
     {

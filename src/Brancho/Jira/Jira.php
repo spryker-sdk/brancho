@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Copyright © 2019-present Spryker Systems GmbH. All rights reserved.
+ * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
+ */
+
 namespace Brancho\Jira;
 
 use chobie\Jira\Api;
@@ -15,9 +20,9 @@ class Jira
      * @param string $issue
      * @param array $config
      *
-     * @return array|null
+     * @return array
      */
-    public function getJiraIssue(string $issue, array $config): ?array
+    public function getJiraIssue(string $issue, array $config): array
     {
         $api = new Api($config['host'], new Basic($config['username'], $config['password']));
 
@@ -27,6 +32,6 @@ class Jira
             return $result->getResult();
         }
 
-        return null;
+        return [];
     }
 }

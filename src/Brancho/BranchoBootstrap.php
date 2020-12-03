@@ -1,9 +1,13 @@
 <?php
 
+/**
+ * Copyright © 2019-present Spryker Systems GmbH. All rights reserved.
+ * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
+ */
+
 namespace Brancho;
 
 use Brancho\Command\BranchBuilderCommand;
-use Brancho\Command\InitCommand;
 use Symfony\Component\Console\Application;
 
 class BranchoBootstrap extends Application
@@ -40,7 +44,6 @@ class BranchoBootstrap extends Application
     {
         return [
             new BranchBuilderCommand(),
-            new InitCommand(),
         ];
     }
 }

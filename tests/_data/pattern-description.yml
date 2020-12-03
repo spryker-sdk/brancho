@@ -1,5 +1,3 @@
-pattern: "{description}"
-resolvers:
-  description: \Brancho\Resolver\DescriptionResolver
+resolver: \Brancho\Resolver\DescriptionResolver
 filters:
   - \Brancho\Filter\Slugify

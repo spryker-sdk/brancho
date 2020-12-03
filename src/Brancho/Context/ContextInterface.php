@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Copyright © 2019-present Spryker Systems GmbH. All rights reserved.
+ * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
+ */
+
 namespace Brancho\Context;
 
 use Laminas\Filter\FilterInterface;
@@ -19,12 +24,12 @@ interface ContextInterface
     public function setConfig(array $config): void;
 
     /**
-     * @return FilterInterface
+     * @return \Laminas\Filter\FilterInterface
      */
     public function getFilter(): FilterInterface;
 
     /**
-     * @param FilterInterface $filter
+     * @param \Laminas\Filter\FilterInterface $filter
      *
      * @return void
      */

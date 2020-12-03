@@ -1,6 +1,0 @@
-pattern: "{type}/{description}"
-resolvers:
-  description: \Brancho\Resolver\DescriptionResolver
-  type: \Brancho\Resolver\TypeResolver
-filters:
-  - \Brancho\Filter\Slugify
