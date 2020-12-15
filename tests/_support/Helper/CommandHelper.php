@@ -9,6 +9,13 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class CommandHelper extends Module
 {
+    /**
+     * @return void
+     */
+    public function _initialize(): void
+    {
+        defined('ROOT_DIR') || define('ROOT_DIR', getcwd());
+    }
 
     /**
      * @param \Symfony\Component\Console\Command\Command $command
