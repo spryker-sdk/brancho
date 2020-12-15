@@ -34,7 +34,7 @@ class BranchBuilderCommand extends AbstractCommand
                 static::CONFIG_SHORTCUT,
                 InputOption::VALUE_REQUIRED,
                 'Path to a configuration file (default: .brancho)',
-                getcwd() . '/.brancho'
+                ROOT_DIR . '/.brancho'
             );
     }
 
@@ -96,7 +96,7 @@ class BranchBuilderCommand extends AbstractCommand
      */
     protected function createBranch(string $branchName): void
     {
-        $process = new Process(['git', 'checkout', '-b', $branchName]);
+        $process = new Process(['git', 'checkout', '-b', $branchName], (string)getcwd());
         $process->run();
     }
 }

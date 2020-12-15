@@ -466,6 +466,47 @@ class BranchBuilderCommandTest extends Unit
     }
 
     /**
+     * Tests when a sub-task's parent is an epic and not an expected task will not search for a task but will use the epic issue number.
+     *
+     * @return void
+     */
+    public function testJiraSubTaskWithEpicParentInsteadOfExpectedTaskParent(): void
+    {
+        // Arrange
+        $taskResponse = include codecept_data_dir('jira-sub-task-response.php');
+        $epicResponse = include codecept_data_dir('jira-epic-response.php');
+
+        $rootDirectoryMock = vfsStream::setup();
+
+        $jiraMock = Stub::make(Jira::class, [
+            'getJiraIssue' => Stub::consecutive($taskResponse, $epicResponse),
+        ]);
+
+        $resolverDecoratorMock = Stub::make(ResolverDecorator::class, [
+            'getRootDirectory' => $rootDirectoryMock->url(),
+        ]);
+
+        /** @var \Brancho\BranchoFactory $factoryMock */
+        $factoryMock = Stub::make(BranchoFactory::class, [
+            'createJira' => $jiraMock,
+            'createResolverDecorator' => $resolverDecoratorMock,
+        ]);
+
+        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
+        $branchBuilderCommandMock->setFactory($factoryMock);
+
+        $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
+
+        // Act
+        $commandTester->execute(['issue' => 'rk-456', '--config' => codecept_data_dir('pattern-jira-without-config.yml')]);
+
+        // Assert
+        $this->assertStringContainsString('"feature/rk-123/rk-456-sub-task-summary" created.', $commandTester->getDisplay());
+
+        $this->assertTrue($rootDirectoryMock->hasChild('.brancho.local'));
+    }
+
+    /**
      * @return void
      */
     public function testJiraOutputsErrorMessageInCaseOfError(): void

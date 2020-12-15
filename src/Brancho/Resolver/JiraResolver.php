@@ -74,9 +74,10 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
 
         $epicOrStoryJiraIssue = $this->getParentJiraIssue($jiraIssue, $config);
         $epicOrStoryIssue = $filter->filter($epicOrStoryJiraIssue['key']);
+        $epicOrStoryIssueType = $filter->filter($epicOrStoryJiraIssue['fields']['issuetype']['name']);
         $issue = sprintf('%s/%s', $epicOrStoryIssue, $issue);
 
-        if ($issueType === 'sub-task') {
+        if ($issueType === 'sub-task' && $epicOrStoryIssueType !== 'epic') {
             $epicJiraIssue = $this->getParentJiraIssue($epicOrStoryJiraIssue, $config);
             $epicIssue = $filter->filter($epicJiraIssue['key']);
 
