@@ -90,12 +90,12 @@ class CommitCommand extends AbstractCommand
     /**
      * @codeCoverageIgnore
      *
-     * @param InputInterface $input
+     * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param string $resolvedCommitMessage
      *
      * @return void
      */
-    protected function commitChanges(InputInterface $input,string $resolvedCommitMessage): void
+    protected function commitChanges(InputInterface $input, string $resolvedCommitMessage): void
     {
         $command = ['git', 'commit', '-m', $resolvedCommitMessage];
 
