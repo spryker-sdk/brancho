@@ -66,13 +66,29 @@ class Brancho
 
     /**
      * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return string|null
+     */
+    public function resolveCommitMessage(InputInterface $input, OutputInterface $output): ?string
+    {
+        $config = $this->loadConfig($this->getConfigPath($input));
+
+        $context = new Context();
+        $context->setConfig($config);
+
+        return $this->factory->createCommitMessageResolver()->resolve($input, $output, $context);
+    }
+
+    /**
+     * @param \Symfony\Component\Console\Input\InputInterface $input
      *
      * @return string
      */
     protected function getConfigPath(InputInterface $input): string
     {
         /** @var string $configPath */
-        $configPath = $input->getOption(BranchBuilderCommand::CONFIG);
+        $configPath = $input->getOption(BranchBuilderCommand::OPTION_CONFIG);
 
         return $configPath;
     }

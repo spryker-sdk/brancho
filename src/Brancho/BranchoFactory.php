@@ -7,6 +7,8 @@
 
 namespace Brancho;
 
+use Brancho\Commit\CommitMessageResolver;
+use Brancho\Commit\CommitMessageResolverInterface;
 use Brancho\Config\Config;
 use Brancho\Config\ConfigInterface;
 use Brancho\Config\Reader\ConfigReader;
@@ -57,5 +59,15 @@ class BranchoFactory
     public function createResolverDecorator(): ResolverDecoratorInterface
     {
         return new ResolverDecorator();
+    }
+
+    /**
+     * @codeCoverageIgnore CommitMessageResolver uses only mocks for testing.
+     *
+     * @return \Brancho\Commit\CommitMessageResolverInterface
+     */
+    public function createCommitMessageResolver(): CommitMessageResolverInterface
+    {
+        return new CommitMessageResolver();
     }
 }
