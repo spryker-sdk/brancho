@@ -124,7 +124,7 @@ class ResolverDecorator implements ResolverDecoratorInterface
     protected function getRootDirectory(InputInterface $input): string
     {
         /** @var string $configPath */
-        $configPath = $input->getOption(BranchBuilderCommand::CONFIG);
+        $configPath = $input->getOption(BranchBuilderCommand::OPTION_CONFIG);
 
         return dirname($configPath);
     }

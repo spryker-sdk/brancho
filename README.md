@@ -5,16 +5,47 @@
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg)](https://php.net/)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat)](https://phpstan.org/)
 
-Brancho is a tool which helps to create branches with a defined naming convention.
+Brancho is a tool that helps to create branches with a defined naming convention. It is also capable of committing your changes.
 
 ## Installation
 
 `composer require --dev spryker-sdk/brancho`
 
+### Add brancho to executable path
+
+`export PATH=/path/to/vendor/bin`
+
 
 ## Configuration
 
-After the installation you will need to configure brancho. The default configuration file is named `.brancho`.
+After the installation you will need to configure brancho. The default configuration file is named `.brancho`. You basically only need to define the resolver that should be used.
+
+`resolver: \Full\Qualified\ClassName`
+
+You can also configure filters here, or you add the required filters to your resolver.
+
+Additionally you can have a `.brancho.local` that holds configurations only needed by you e.g. credentials.
+
+
+## Commands
+
+Brancho offers the following commands:
+
+- `brancho branch` - to create a branch.
+- `brancho commit` - to commit changes.
+
+You can use `-h` for both commands to get more information about their usage.
+
+
+### Command alias
+
+You should create aliases for both commands to make them even more easy to use.
+
+Examples:
+
+- `alias bb=brancho branch`
+- `alias bc=brancho commit`
+- `alias bca=brancho commit -a`
 
 
 ### Resolver

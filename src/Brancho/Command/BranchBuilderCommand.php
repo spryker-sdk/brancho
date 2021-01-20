@@ -18,8 +18,8 @@ class BranchBuilderCommand extends AbstractCommand
 {
     public const ARGUMENT_ISSUE = 'issue';
 
-    public const CONFIG = 'config';
-    public const CONFIG_SHORTCUT = 'c';
+    public const OPTION_CONFIG = 'config';
+    public const OPTION_CONFIG_SHORTCUT = 'c';
 
     /**
      * @return void
@@ -30,8 +30,8 @@ class BranchBuilderCommand extends AbstractCommand
             ->setDescription('Builds branch names.')
             ->addArgument(static::ARGUMENT_ISSUE, InputArgument::OPTIONAL, 'Issue number a branch should be created for e.g. "rk-123".')
             ->addOption(
-                static::CONFIG,
-                static::CONFIG_SHORTCUT,
+                static::OPTION_CONFIG,
+                static::OPTION_CONFIG_SHORTCUT,
                 InputOption::VALUE_REQUIRED,
                 'Path to a configuration file (default: .brancho)',
                 ROOT_DIR . '/.brancho'

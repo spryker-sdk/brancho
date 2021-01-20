@@ -5,7 +5,7 @@
  * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
  */
 
-namespace BranchoTest\BranchoTest\Command;
+namespace BranchoTest\Command;
 
 use Brancho\BranchoFactory;
 use Brancho\Command\BranchBuilderCommand;
@@ -15,6 +15,11 @@ use Codeception\Stub;
 use Codeception\Test\Unit;
 use org\bovigo\vfs\vfsStream;
 
+/**
+ * @group Brancho
+ * @group Command
+ * @group BranchBuilderCommandTest
+ */
 class BranchBuilderCommandTest extends Unit
 {
     /**
@@ -341,8 +346,6 @@ class BranchBuilderCommandTest extends Unit
     }
 
     /**
-     * @group single
-     *
      * @return void
      */
     public function testJiraSubTaskIssueBranchNameCreation(): void
