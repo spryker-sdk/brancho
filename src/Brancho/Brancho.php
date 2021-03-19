@@ -10,21 +10,16 @@ namespace Brancho;
 use Brancho\Command\BranchBuilderCommand;
 use Brancho\Config\Config;
 use Brancho\Config\ConfigInterface;
-use Brancho\Context\Context;
 use Brancho\Resolver\AbstractResolver;
 use Brancho\Resolver\ConfigurableResolverInterface;
 use Brancho\Resolver\ResolverInterface;
 use Laminas\Filter\FilterChain;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Brancho
 {
-    /**
-     * @var string[]
-     */
-    protected $resolvedElements = [];
-
     /**
      * @var \Brancho\Config\ConfigInterface
      */
@@ -55,7 +50,7 @@ class Brancho
     {
         $config = $this->loadConfig($this->getConfigPath($input));
 
-        $context = new Context();
+        $context = $this->factory->createContext();
         $context->setConfig($config);
         $context->setFilter($this->getFilter($config));
 
@@ -74,7 +69,7 @@ class Brancho
     {
         $config = $this->loadConfig($this->getConfigPath($input));
 
-        $context = new Context();
+        $context = $this->factory->createContext();
         $context->setConfig($config);
 
         return $this->factory->createCommitMessageResolver()->resolve($input, $output, $context);
@@ -96,10 +91,19 @@ class Brancho
     /**
      * @param string $pathToConfig
      *
+     * @throws \RuntimeException
+     *
      * @return array
      */
     protected function loadConfig(string $pathToConfig): array
     {
+        if (!file_exists($pathToConfig)) {
+            throw new RuntimeException(sprintf(
+                'Config file `%s` does not exist',
+                $pathToConfig
+            ));
+        }
+
         return $this->config->load($pathToConfig);
     }
 
