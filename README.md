@@ -9,12 +9,19 @@ Brancho is a tool that helps to create branches with a defined naming convention
 
 ## Installation
 
-`composer require --dev spryker-sdk/brancho`
+It is recommended that you install Brancho globally:
+
+`composer global require spryker-sdk/brancho`
+
+If you want it in your project go into your project folder and run:
+
+`composer require spryker-sdk/brancho --dev`
 
 ### Add brancho to executable path
 
 `export PATH=/path/to/vendor/bin`
 
+On Ubuntu 20.04 the path should be `~/.config/composer/vendor/bin`
 
 ## Configuration
 
