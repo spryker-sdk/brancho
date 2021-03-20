@@ -17,6 +17,11 @@ suites:
         modules:
             enabled:
                 - \BranchoTest\Helper\CommandHelper
+    Brancho:
+        path: BranchoTest/Brancho
+        class_name: BranchoTester
+        modules:
+            enabled:
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
