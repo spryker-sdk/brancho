@@ -18,8 +18,6 @@ namespace BranchoTest;
 */
 class BranchoTester extends \Codeception\Actor
 {
-    use _generated\BranchoTesterActions;
-
     /**
      * Define custom actions here
      */
