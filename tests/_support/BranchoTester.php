@@ -1,4 +1,5 @@
 <?php
+
 namespace BranchoTest;
 
 /**
@@ -18,7 +19,5 @@ namespace BranchoTest;
 */
 class BranchoTester extends \Codeception\Actor
 {
-    /**
-     * Define custom actions here
-     */
+    use _generated\BranchoTesterActions;
 }
