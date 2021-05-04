@@ -10,7 +10,6 @@ namespace Brancho;
 use Brancho\Command\BranchBuilderCommand;
 use Brancho\Config\Config;
 use Brancho\Config\ConfigInterface;
-use Brancho\Context\Context;
 use Brancho\Resolver\AbstractResolver;
 use Brancho\Resolver\ConfigurableResolverInterface;
 use Brancho\Resolver\ResolverInterface;
@@ -20,11 +19,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Brancho
 {
-    /**
-     * @var string[]
-     */
-    protected $resolvedElements = [];
-
     /**
      * @var \Brancho\Config\ConfigInterface
      */
@@ -55,7 +49,7 @@ class Brancho
     {
         $config = $this->loadConfig($this->getConfigPath($input));
 
-        $context = new Context();
+        $context = $this->factory->createContext();
         $context->setConfig($config);
         $context->setFilter($this->getFilter($config));
 
@@ -74,7 +68,7 @@ class Brancho
     {
         $config = $this->loadConfig($this->getConfigPath($input));
 
-        $context = new Context();
+        $context = $this->factory->createContext();
         $context->setConfig($config);
 
         return $this->factory->createCommitMessageResolver()->resolve($input, $output, $context);

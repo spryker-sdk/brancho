@@ -8,6 +8,7 @@
 namespace Brancho\Config;
 
 use Brancho\Config\Reader\ConfigReaderInterface;
+use RuntimeException;
 
 class Config implements ConfigInterface
 {
@@ -35,10 +36,19 @@ class Config implements ConfigInterface
     /**
      * @param string $pathToConfig
      *
+     * @throws \RuntimeException
+     *
      * @return array
      */
     public function load(string $pathToConfig): array
     {
+        if (!file_exists($pathToConfig)) {
+            throw new RuntimeException(sprintf(
+                'Config file `%s` does not exist',
+                $pathToConfig
+            ));
+        }
+
         if ($this->config === null) {
             $config = $this->getRootConfiguration($pathToConfig);
             $config = $this->mergeLocalConfigurations($pathToConfig, $config);

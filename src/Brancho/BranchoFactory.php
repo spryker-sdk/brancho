@@ -13,6 +13,8 @@ use Brancho\Config\Config;
 use Brancho\Config\ConfigInterface;
 use Brancho\Config\Reader\ConfigReader;
 use Brancho\Config\Reader\ConfigReaderInterface;
+use Brancho\Context\Context;
+use Brancho\Context\ContextInterface;
 use Brancho\Jira\Jira;
 use Brancho\Resolver\ResolverDecorator;
 use Brancho\Resolver\ResolverDecoratorInterface;
@@ -33,6 +35,14 @@ class BranchoFactory
     public function createConfig(): ConfigInterface
     {
         return new Config($this->createConfigReader());
+    }
+
+    /**
+     * @return \Brancho\Context\ContextInterface
+     */
+    public function createContext(): ContextInterface
+    {
+        return new Context();
     }
 
     /**
