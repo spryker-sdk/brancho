@@ -46,6 +46,18 @@ jobs:
             - name: Codecept run
               run: vendor/bin/codecept run --coverage-xml
 
+            - name: ReportGenerator
+              uses: danielpalme/ReportGenerator-GitHub-Action@4.8.12
+              with:
+                  reports: './tests/_output/coverage.xml'
+                  targetdir: './coverage'
+                  reporttypes: 'lcov'
+
+            - name: Coveralls
+              uses: coverallsapp/github-action@master
+                with:
+                github-token: ${{ secrets.GITHUB_TOKEN }}
+
             - name: Code Coverage Report
               if: success() && matrix.php-version == '7.3'
               uses: codecov/codecov-action@v1
