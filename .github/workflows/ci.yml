@@ -46,12 +46,18 @@ jobs:
             - name: Codecept run
               run: vendor/bin/codecept run --coverage-xml
 
-            - name: Upload coverage results to Coveralls
-              env:
-                COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                composer global require cedx/coveralls
-                coveralls ./tests/_output/coverage.xml
+            - name: ReportGenerator
+              uses: danielpalme/ReportGenerator-GitHub-Action@4.8.12
+              with:
+                  reports: './tests/_output/coverage.xml'
+                  targetdir: './coverage'
+                  reporttypes: 'lcov'
+
+            - name: Coveralls
+              uses: coverallsapp/github-action@master
+              with:
+                  path-to-lcov: './tests/_output/coverage.xml'
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Code Coverage Report
               if: success() && matrix.php-version == '7.3'
