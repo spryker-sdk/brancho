@@ -57,7 +57,7 @@ jobs:
               if: success() && matrix.php-version == '7.3'
               uses: codecov/codecov-action@v1
               with:
-                file: ./tests/_output/coverage.xml
+                  file: ./tests/_output/coverage.xml
 
     checks:
         runs-on: ubuntu-latest
