@@ -540,7 +540,7 @@ class BranchBuilderCommandTest extends Unit
         // Assert
         $this->assertStringContainsString(
             'Issue does not exist or you do not have permission to see it.',
-            $commandTester->getDisplay()
+            $commandTester->getDisplay(),
         );
     }
 

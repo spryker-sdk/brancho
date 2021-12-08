@@ -99,7 +99,7 @@ class ResolverDecorator implements ResolverDecoratorInterface
     }
 
     /**
-     * @param string|array $question
+     * @param array|string $question
      *
      * @return \Symfony\Component\Console\Question\Question
      */

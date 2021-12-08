@@ -12,7 +12,14 @@ use Symfony\Component\Console\Command\Command;
 
 class AbstractCommand extends Command
 {
+    /**
+     * @var int
+     */
     protected const CODE_SUCCESS = 0;
+
+    /**
+     * @var int
+     */
     protected const CODE_ERROR = 1;
 
     /**

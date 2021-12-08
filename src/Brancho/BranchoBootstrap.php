@@ -25,7 +25,7 @@ class BranchoBootstrap extends Application
     }
 
     /**
-     * @return \Symfony\Component\Console\Command\Command[]
+     * @return array<\Symfony\Component\Console\Command\Command>
      */
     protected function getDefaultCommands(): array
     {
@@ -39,7 +39,7 @@ class BranchoBootstrap extends Application
     }
 
     /**
-     * @return \Symfony\Component\Console\Command\Command[]
+     * @return array<\Symfony\Component\Console\Command\Command>
      */
     private function getCommands(): array
     {

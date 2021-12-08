@@ -18,6 +18,9 @@ use Symfony\Component\Process\Process;
 
 class CommitMessageResolver implements CommitMessageResolverInterface
 {
+    /**
+     * @var string
+     */
     public const WRITE_OWN = 'write own';
 
     /**
@@ -76,7 +79,7 @@ class CommitMessageResolver implements CommitMessageResolverInterface
         $question = new ChoiceQuestion(
             sprintf('Please select from default messages (defaults to "%s")', static::WRITE_OWN),
             $messages,
-            count($messages) - 1
+            count($messages) - 1,
         );
 
         $message = $helper->ask($input, $output, $question);

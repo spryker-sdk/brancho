@@ -16,9 +16,19 @@ use Symfony\Component\Process\Process;
 
 class BranchBuilderCommand extends AbstractCommand
 {
+    /**
+     * @var string
+     */
     public const ARGUMENT_ISSUE = 'issue';
 
+    /**
+     * @var string
+     */
     public const OPTION_CONFIG = 'config';
+
+    /**
+     * @var string
+     */
     public const OPTION_CONFIG_SHORTCUT = 'c';
 
     /**
@@ -34,7 +44,7 @@ class BranchBuilderCommand extends AbstractCommand
                 static::OPTION_CONFIG_SHORTCUT,
                 InputOption::VALUE_REQUIRED,
                 'Path to a configuration file (default: .brancho)',
-                ROOT_DIR . '/.brancho'
+                ROOT_DIR . '/.brancho',
             );
     }
 
@@ -73,7 +83,7 @@ class BranchBuilderCommand extends AbstractCommand
             $question = new ConfirmationQuestion(sprintf(
                 'Should I create the branch "<info>%s</>" for you in "<info>%s</>"?  [<fg=yellow>yes</>|<fg=yellow>no</>] (<fg=green>enter: yes</>) ',
                 $resolvedBranchName,
-                getcwd()
+                getcwd(),
             ));
 
             $shouldCreate = $this->getHelper('question')->ask($input, $output, $question);
