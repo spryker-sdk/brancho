@@ -18,7 +18,7 @@ use Symfony\Component\Console\Question\Question;
 class JiraResolver extends AbstractResolver implements ConfigurableResolverInterface
 {
     /**
-     * @var string[]
+     * @var array<string>
      */
     protected $issueTypeMap = [
         'epic' => 'feature',
@@ -27,7 +27,7 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
     ];
 
     /**
-     * @var string[]
+     * @var array<string>
      */
     protected $issueTypeToPrefixMap = [
         'epic' => 'master',

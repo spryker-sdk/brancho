@@ -12,7 +12,14 @@ use RuntimeException;
 
 class Config implements ConfigInterface
 {
+    /**
+     * @var string
+     */
     public const RESOLVER = 'resolver';
+
+    /**
+     * @var string
+     */
     public const FILTERS = 'filters';
 
     /**
@@ -45,7 +52,7 @@ class Config implements ConfigInterface
         if (!file_exists($pathToConfig)) {
             throw new RuntimeException(sprintf(
                 'Config file `%s` does not exist',
-                $pathToConfig
+                $pathToConfig,
             ));
         }
 
