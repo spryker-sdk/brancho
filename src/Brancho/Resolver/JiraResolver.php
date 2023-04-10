@@ -91,11 +91,23 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
         return (array)$this->createBranchName($issue, $summary);
     }
 
-    protected function createBranchFromIssueWithouParent($input, $output, $issue, $summary): ?array
-    {
+    /**
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param string $issue
+     * @param string $summary
+     *
+     * @return array|null
+     */
+    protected function createBranchFromIssueWithouParent(
+        InputInterface $input,
+        OutputInterface $output,
+        string $issue,
+        string $summary
+    ): ?array {
         $question = new ConfirmationQuestion(
             'Ticket without parent or epic branch. Proceed the creation? ' .
-            '[<fg=yellow>yes</>|<fg=yellow>no</>] (<fg=green>enter: yes</>) '
+            '[<fg=yellow>yes</>|<fg=yellow>no</>] (<fg=green>enter: yes</>) ',
         );
 
         $helper = new QuestionHelper();
@@ -107,7 +119,7 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
         }
 
         return [
-            sprintf('feature/%s/dev-%s', $issue, $summary)
+            sprintf('feature/%s/dev-%s', $issue, $summary),
         ];
     }
 
@@ -243,21 +255,26 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
      *
      * @return string
      */
-    protected function getParentIssue(array $jiraIssue): ?string
+    protected function getParentIssue(array $jiraIssue): string
     {
         if (isset($jiraIssue['fields']['customfield_10008'])) {
             return $jiraIssue['fields']['customfield_10008'];
         }
 
-        return $jiraIssue['fields']['parent']['key'] ?? null;
+        return $jiraIssue['fields']['parent']['key'];
     }
 
     /**
      * @param array $jiraIssue
+     *
      * @return bool
      */
     protected function hasParentIssue(array $jiraIssue): bool
     {
-        return $this->getParentIssue($jiraIssue) !== null;
+        if (isset($jiraIssue['fields']['customfield_10008']) && !empty($jiraIssue['fields']['customfield_10008'])) {
+            return true;
+        }
+
+        return isset($jiraIssue['fields']['parent']['key']) && !empty($jiraIssue['fields']['parent']['key']);
     }
 }
