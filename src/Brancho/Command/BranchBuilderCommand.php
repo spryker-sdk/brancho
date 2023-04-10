@@ -60,7 +60,7 @@ class BranchBuilderCommand extends AbstractCommand
         $resolvedBranchNames = $brancho->resolveBranchNames($input, $output);
 
         if (!$resolvedBranchNames) {
-            $output->writeln('<fg=red>The resolved branch name is empty something went wrong.</>');
+            $output->writeln('<fg=red>No branches to create.</>');
 
             return static::CODE_ERROR;
         }
