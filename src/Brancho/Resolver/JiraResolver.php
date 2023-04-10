@@ -72,6 +72,10 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
             return $this->createEpicBranchNames($input, $output, $issue, $summary);
         }
 
+        if (!$this->hasParentIssue($jiraIssue)) {
+            return $this->createBranchFromIssueWithouParent($input, $output, $issue, $summary);
+        }
+
         $epicOrStoryJiraIssue = $this->getParentJiraIssue($jiraIssue, $config);
         $epicOrStoryIssue = $filter->filter($epicOrStoryJiraIssue['key']);
         $epicOrStoryIssueType = $filter->filter($epicOrStoryJiraIssue['fields']['issuetype']['name']);
@@ -85,6 +89,26 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
         }
 
         return (array)$this->createBranchName($issue, $summary);
+    }
+
+    protected function createBranchFromIssueWithouParent($input, $output, $issue, $summary): ?array
+    {
+        $question = new ConfirmationQuestion(
+            'Ticket without parent or epic branch. Proceed the creation? ' .
+            '[<fg=yellow>yes</>|<fg=yellow>no</>] (<fg=green>enter: yes</>) '
+        );
+
+        $helper = new QuestionHelper();
+
+        $shouldCreate = $helper->ask($input, $output, $question);
+
+        if (!$shouldCreate) {
+            return null;
+        }
+
+        return [
+            sprintf('feature/%s/dev-%s', $issue, $summary)
+        ];
     }
 
     /**
@@ -219,12 +243,21 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
      *
      * @return string
      */
-    protected function getParentIssue(array $jiraIssue): string
+    protected function getParentIssue(array $jiraIssue): ?string
     {
         if (isset($jiraIssue['fields']['customfield_10008'])) {
             return $jiraIssue['fields']['customfield_10008'];
         }
 
-        return $jiraIssue['fields']['parent']['key'];
+        return $jiraIssue['fields']['parent']['key'] ?? null;
+    }
+
+    /**
+     * @param array $jiraIssue
+     * @return bool
+     */
+    protected function hasParentIssue(array $jiraIssue): bool
+    {
+        return $this->getParentIssue($jiraIssue) !== null;
     }
 }

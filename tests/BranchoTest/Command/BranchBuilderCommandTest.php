@@ -424,6 +424,92 @@ class BranchBuilderCommandTest extends Unit
     /**
      * @return void
      */
+    public function testJiraWillAskForContinueIfTaskDoesNotHaveParent(): void
+    {
+        // Arrange
+        $taskResponse = include codecept_data_dir('jira-task-response-without-epic.php');
+
+        $rootDirectoryMock = vfsStream::setup();
+
+        $jiraMock = Stub::make(Jira::class, [
+            'getJiraIssue' => $taskResponse,
+        ]);
+
+        $resolverDecoratorMock = Stub::make(ResolverDecorator::class, [
+            'getRootDirectory' => $rootDirectoryMock->url(),
+        ]);
+
+        /** @var \Brancho\BranchoFactory $factoryMock */
+        $factoryMock = Stub::make(BranchoFactory::class, [
+            'createJira' => $jiraMock,
+            'createResolverDecorator' => $resolverDecoratorMock,
+        ]);
+
+        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
+        $branchBuilderCommandMock->setFactory($factoryMock);
+
+        $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
+        $commandTester->setInputs(['https://spryker.atlassian.net', 'Spryker', 'api-key']);
+
+        // Act
+        $commandTester->execute(['issue' => 'rk-321', '--config' => codecept_data_dir('pattern-jira-without-config.yml')]);
+
+        // Assert
+        $this->assertStringContainsString('Please enter the host of your Jira e.g. https://spryker.atlassian.net', $commandTester->getDisplay());
+        $this->assertStringContainsString('Please enter your Jira username', $commandTester->getDisplay());
+        $this->assertStringContainsString('Please enter you Jira API key, you can get one here https://id.atlassian.com/manage-profile/security/api-tokens', $commandTester->getDisplay());
+        $this->assertStringContainsString('Ticket without parent or epic branch. Proceed the creation?', $commandTester->getDisplay());
+        $this->assertStringContainsString('"feature/rk-321/dev-task-summary" created.', $commandTester->getDisplay());
+
+        $this->assertTrue($rootDirectoryMock->hasChild('.brancho.local'));
+    }
+
+    /**
+     * @return void
+     */
+    public function testJiraShouldNotCreateBranchIfDoesNotHaveParentAndCreationNotAllowed(): void
+    {
+        // Arrange
+        $taskResponse = include codecept_data_dir('jira-task-response-without-epic.php');
+
+        $rootDirectoryMock = vfsStream::setup();
+
+        $jiraMock = Stub::make(Jira::class, [
+            'getJiraIssue' => $taskResponse,
+        ]);
+
+        $resolverDecoratorMock = Stub::make(ResolverDecorator::class, [
+            'getRootDirectory' => $rootDirectoryMock->url(),
+        ]);
+
+        /** @var \Brancho\BranchoFactory $factoryMock */
+        $factoryMock = Stub::make(BranchoFactory::class, [
+            'createJira' => $jiraMock,
+            'createResolverDecorator' => $resolverDecoratorMock,
+        ]);
+
+        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
+        $branchBuilderCommandMock->setFactory($factoryMock);
+
+        $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
+        $commandTester->setInputs(['https://spryker.atlassian.net', 'Spryker', 'api-key', 'no']);
+
+        // Act
+        $commandTester->execute(['issue' => 'rk-321', '--config' => codecept_data_dir('pattern-jira-without-config.yml')]);
+
+        // Assert
+        $this->assertStringContainsString('Please enter the host of your Jira e.g. https://spryker.atlassian.net', $commandTester->getDisplay());
+        $this->assertStringContainsString('Please enter your Jira username', $commandTester->getDisplay());
+        $this->assertStringContainsString('Please enter you Jira API key, you can get one here https://id.atlassian.com/manage-profile/security/api-tokens', $commandTester->getDisplay());
+        $this->assertStringContainsString('Ticket without parent or epic branch. Proceed the creation?', $commandTester->getDisplay());
+        $this->assertStringNotContainsString('"feature/rk-321/dev-task-summary" created.', $commandTester->getDisplay());
+
+        $this->assertTrue($rootDirectoryMock->hasChild('.brancho.local'));
+    }
+
+    /**
+     * @return void
+     */
     public function testJiraWillAskForConfigurationAndAppendsItToAnExistingLocalConfiguration(): void
     {
         // Arrange
