@@ -75,7 +75,7 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
         $finalIssueSlug = $issueKey;
         $parentIssueData = $this->getParentJiraIssue($jiraIssueData, $config);
 
-        if(!$parentIssueData) {
+        if (!$parentIssueData) {
             $output->writeln('<comment>Warning: Ticket has no parent or epic branch.</>');
         } else {
             $parentIssueSlug = $filter->filter($parentIssueData['key']);
@@ -85,9 +85,11 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
 
             if ($issueType === 'sub-task' && $parentIssueType !== 'epic') {
                 $epicJiraIssue = $this->getParentJiraIssue($parentIssueData, $config);
-                $epicIssue = $filter->filter($epicJiraIssue['key']);
 
-                $finalIssueSlug = sprintf('%s/%s', $epicIssue, $finalIssueSlug);
+                if ($epicJiraIssue) {
+                    $epicIssue = $filter->filter($epicJiraIssue['key']);
+                    $finalIssueSlug = sprintf('%s/%s', $epicIssue, $finalIssueSlug);
+                }
             }
         }
 
@@ -212,13 +214,13 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
      * @param array $jiraIssue
      * @param array $config
      *
-     * @return array
+     * @return array|null
      */
     protected function getParentJiraIssue(array $jiraIssue, array $config): ?array
     {
         $parentIssue = $this->getParentIssue($jiraIssue);
 
-        if(!$parentIssue){
+        if (!$parentIssue) {
             return null;
         }
 
@@ -230,7 +232,7 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
     /**
      * @param array $jiraIssue
      *
-     * @return string
+     * @return string|null
      */
     protected function getParentIssue(array $jiraIssue): ?string
     {

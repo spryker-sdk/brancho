@@ -7,11 +7,6 @@
 
 namespace BranchoTest\Command;
 
-use Brancho\BranchoFactory;
-use Brancho\Command\BranchBuilderCommand;
-use Brancho\Jira\Jira;
-use Brancho\Resolver\ResolverDecorator;
-use Codeception\Stub;
 use Codeception\Test\Unit;
 use org\bovigo\vfs\vfsStream;
 
@@ -59,7 +54,7 @@ class BranchBuilderCommandTest extends Unit
     {
         // Arrange
         $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
-            'jira-bug-response.php'
+            'jira-bug-response.php',
         ]);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
@@ -84,7 +79,7 @@ class BranchBuilderCommandTest extends Unit
     {
         // Arrange
         $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
-            'jira-bug-response.php'
+            'jira-bug-response.php',
         ]);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
@@ -108,7 +103,7 @@ class BranchBuilderCommandTest extends Unit
     {
         // Arrange
         $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
-            'jira-bug-response.php'
+            'jira-bug-response.php',
         ]);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
@@ -128,7 +123,7 @@ class BranchBuilderCommandTest extends Unit
     {
         // Arrange
         $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
-            'jira-epic-response.php'
+            'jira-epic-response.php',
         ]);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
@@ -148,7 +143,7 @@ class BranchBuilderCommandTest extends Unit
     {
         // Arrange
         $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
-            'jira-epic-response.php'
+            'jira-epic-response.php',
         ]);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
@@ -169,7 +164,7 @@ class BranchBuilderCommandTest extends Unit
     {
         // Arrange
         $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
-            'jira-epic-response.php'
+            'jira-epic-response.php',
         ]);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
@@ -181,7 +176,6 @@ class BranchBuilderCommandTest extends Unit
         // Assert
         $this->assertStringContainsString('feature/rk-123/master-epic-summary', $commandTester->getDisplay());
         $this->assertStringContainsString('"feature/rk-123/master-epic-summary" created.', $commandTester->getDisplay());
-
     }
 
     /**
@@ -261,7 +255,7 @@ class BranchBuilderCommandTest extends Unit
                 'jira-task-response.php',
                 'jira-epic-response.php',
             ],
-            $rootDirectoryMock
+            $rootDirectoryMock,
         );
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
@@ -289,7 +283,7 @@ class BranchBuilderCommandTest extends Unit
             [
                 'jira-task-response-without-epic.php',
             ],
-            $rootDirectoryMock
+            $rootDirectoryMock,
         );
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
@@ -319,7 +313,7 @@ class BranchBuilderCommandTest extends Unit
             [
                 'jira-task-response-without-epic.php',
             ],
-            $rootDirectoryMock
+            $rootDirectoryMock,
         );
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
@@ -350,7 +344,7 @@ class BranchBuilderCommandTest extends Unit
                 'jira-task-response.php',
                 'jira-epic-response.php',
             ],
-            $rootDirectoryMock
+            $rootDirectoryMock,
         );
 
         // Add an existing config file where we want to add the new config to.
@@ -385,7 +379,7 @@ class BranchBuilderCommandTest extends Unit
                 'jira-sub-task-response.php',
                 'jira-epic-response.php',
             ],
-            $rootDirectoryMock
+            $rootDirectoryMock,
         );
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
