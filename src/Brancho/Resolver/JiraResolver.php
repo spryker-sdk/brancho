@@ -72,7 +72,6 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
             return $this->createEpicBranchNames($input, $output, $issueKey, $issueSummary);
         }
 
-        $finalIssueSlug = $issueKey;
         $parentIssueData = $this->getParentJiraIssue($jiraIssueData, $config);
 
         if (!$parentIssueData) {
@@ -81,19 +80,21 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
             $parentIssueSlug = $filter->filter($parentIssueData['key']);
             $parentIssueType = $filter->filter($parentIssueData['fields']['issuetype']['name']);
 
-            $finalIssueSlug = sprintf('%s/%s', $parentIssueSlug, $finalIssueSlug);
+            $issueKey = sprintf('%s/%s', $parentIssueSlug, $issueKey);
 
             if ($issueType === 'sub-task' && $parentIssueType !== 'epic') {
                 $epicJiraIssue = $this->getParentJiraIssue($parentIssueData, $config);
 
                 if ($epicJiraIssue) {
                     $epicIssue = $filter->filter($epicJiraIssue['key']);
-                    $finalIssueSlug = sprintf('%s/%s', $epicIssue, $finalIssueSlug);
+                    $issueKey = sprintf('%s/%s', $epicIssue, $issueKey);
                 }
             }
         }
 
-        return (array)$this->createBranchName($finalIssueSlug, $issueSummary);
+        return [
+            $this->createBranchName($issueKey, $issueSummary),
+        ];
     }
 
     /**
