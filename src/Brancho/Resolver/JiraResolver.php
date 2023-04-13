@@ -45,46 +45,56 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
      */
     public function resolve(InputInterface $input, OutputInterface $output, ContextInterface $context): ?array
     {
-        $issue = $this->getIssue($input, $output);
+        $issueKey = $this->getIssue($input, $output);
 
         $filter = $context->getFilter();
         $config = $context->getConfig()['jira'];
 
-        $jiraIssue = $this->getFactory()->createJira()->getJiraIssue($issue, $config);
+        $jiraIssueData = $this->getFactory()->createJira()->getJiraIssue($issueKey, $config);
 
-        if (isset($jiraIssue['errorMessages'])) {
-            foreach ($jiraIssue['errorMessages'] as $errorMessage) {
+        if (isset($jiraIssueData['errorMessages'])) {
+            foreach ($jiraIssueData['errorMessages'] as $errorMessage) {
                 $output->writeln(sprintf('<fg=red>%s</>', $errorMessage));
             }
 
             return null;
         }
 
-        $issue = $filter->filter($issue);
-        $issueType = $filter->filter($jiraIssue['fields']['issuetype']['name']);
-        $summary = $filter->filter($jiraIssue['fields']['summary']);
+        $issueKey = $filter->filter($issueKey);
+        $issueType = $filter->filter($jiraIssueData['fields']['issuetype']['name']);
+        $issueSummary = $filter->filter($jiraIssueData['fields']['summary']);
 
         if ($issueType === 'bug') {
-            return (array)$this->createBugfixBranchName($issue, $summary);
+            return (array)$this->createBugfixBranchName($issueKey, $issueSummary);
         }
 
         if ($issueType === 'epic') {
-            return $this->createEpicBranchNames($input, $output, $issue, $summary);
+            return $this->createEpicBranchNames($input, $output, $issueKey, $issueSummary);
         }
 
-        $epicOrStoryJiraIssue = $this->getParentJiraIssue($jiraIssue, $config);
-        $epicOrStoryIssue = $filter->filter($epicOrStoryJiraIssue['key']);
-        $epicOrStoryIssueType = $filter->filter($epicOrStoryJiraIssue['fields']['issuetype']['name']);
-        $issue = sprintf('%s/%s', $epicOrStoryIssue, $issue);
+        $parentIssueData = $this->getParentJiraIssue($jiraIssueData, $config);
 
-        if ($issueType === 'sub-task' && $epicOrStoryIssueType !== 'epic') {
-            $epicJiraIssue = $this->getParentJiraIssue($epicOrStoryJiraIssue, $config);
-            $epicIssue = $filter->filter($epicJiraIssue['key']);
+        if (!$parentIssueData) {
+            $output->writeln('<comment>Warning: Ticket has no parent or epic branch.</>');
+        } else {
+            $parentIssueSlug = $filter->filter($parentIssueData['key']);
+            $parentIssueType = $filter->filter($parentIssueData['fields']['issuetype']['name']);
 
-            $issue = sprintf('%s/%s', $epicIssue, $issue);
+            $issueKey = sprintf('%s/%s', $parentIssueSlug, $issueKey);
+
+            if ($issueType === 'sub-task' && $parentIssueType !== 'epic') {
+                $epicJiraIssue = $this->getParentJiraIssue($parentIssueData, $config);
+
+                if ($epicJiraIssue) {
+                    $epicIssue = $filter->filter($epicJiraIssue['key']);
+                    $issueKey = sprintf('%s/%s', $epicIssue, $issueKey);
+                }
+            }
         }
 
-        return (array)$this->createBranchName($issue, $summary);
+        return [
+            $this->createBranchName($issueKey, $issueSummary),
+        ];
     }
 
     /**
@@ -205,26 +215,28 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
      * @param array $jiraIssue
      * @param array $config
      *
-     * @return array
+     * @return array|null
      */
-    protected function getParentJiraIssue(array $jiraIssue, array $config): array
+    protected function getParentJiraIssue(array $jiraIssue, array $config): ?array
     {
+        $parentIssue = $this->getParentIssue($jiraIssue);
+
+        if (!$parentIssue) {
+            return null;
+        }
+
         return $this->getFactory()
             ->createJira()
-            ->getJiraIssue($this->getParentIssue($jiraIssue), $config);
+            ->getJiraIssue($parentIssue, $config);
     }
 
     /**
      * @param array $jiraIssue
      *
-     * @return string
+     * @return string|null
      */
-    protected function getParentIssue(array $jiraIssue): string
+    protected function getParentIssue(array $jiraIssue): ?string
     {
-        if (isset($jiraIssue['fields']['customfield_10008'])) {
-            return $jiraIssue['fields']['customfield_10008'];
-        }
-
-        return $jiraIssue['fields']['parent']['key'];
+        return $jiraIssue['fields']['customfield_10008'] ?? $jiraIssue['fields']['parent']['key'] ?? null;
     }
 }
