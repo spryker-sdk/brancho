@@ -194,9 +194,59 @@ class BranchBuilderCommandTest extends Unit
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
 
         // Act
+        $commandTester->setInputs(['n']);
         $commandTester->execute(['issue' => 'rk-231', '--config' => codecept_data_dir('pattern-jira.yml')]);
 
         // Assert
+        $this->assertStringContainsString('"feature/rk-123/rk-231-story-summary" created.', $commandTester->getDisplay());
+    }
+
+    /**
+     * Story: Tests branch name consists of two tickets, the story and the parent epic.
+     *
+     * @return void
+     */
+    public function testJiraStoryCreatesBranchNameForReleasableStoryWhenIssueTypeIsAStoryAndUserSetItToBeReleasable(): void
+    {
+        // Arrange
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-story-response.php',
+            'jira-epic-response.php',
+        ]);
+
+        $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
+
+        // Act
+        $commandTester->setInputs(['y', 'n']);
+        $commandTester->execute(['issue' => 'rk-231', '--config' => codecept_data_dir('pattern-jira.yml')]);
+
+        // Assert
+        $this->assertStringContainsString('Do you want to release this story without an epic?', $commandTester->getDisplay());
+        $this->assertStringContainsString('"feature/rk-231/master-story-summary" created.', $commandTester->getDisplay());
+    }
+
+    /**
+     * @group single
+     * Story: Tests branch name consists of two tickets, the story and the parent epic.
+     *
+     * @return void
+     */
+    public function testJiraStoryCreatesDefaultBranchNameForStoryWhenIssueTypeIsAStoryAndUserSetItToNotBeReleasable(): void
+    {
+        // Arrange
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-story-response.php',
+            'jira-epic-response.php',
+        ]);
+
+        $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
+
+        // Act
+        $commandTester->setInputs(['n', 'y']);
+        $commandTester->execute(['issue' => 'rk-231', '--config' => codecept_data_dir('pattern-jira.yml')]);
+
+        // Assert
+        $this->assertStringContainsString('Do you want to release this story without an epic?', $commandTester->getDisplay());
         $this->assertStringContainsString('"feature/rk-123/rk-231-story-summary" created.', $commandTester->getDisplay());
     }
 

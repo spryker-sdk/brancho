@@ -69,11 +69,14 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
         }
 
         if ($issueType === 'epic') {
-            return $this->createEpicBranchNames($input, $output, $issueKey, $issueSummary);
+            return $this->createEpicOrStoryBranchNames($input, $output, $issueKey, $issueSummary);
+        }
+
+        if ($this->isReleasableStory($input, $output, $issueType)) {
+            return $this->createEpicOrStoryBranchNames($input, $output, $issueKey, $issueSummary);
         }
 
         $parentIssueData = $this->getParentJiraIssue($jiraIssueData, $config);
-
         if (!$parentIssueData) {
             $output->writeln('<comment>Warning: Ticket has no parent or epic branch.</>');
         } else {
@@ -98,6 +101,25 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
     }
 
     /**
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param string $issueType
+     *
+     * @return bool
+     */
+    protected function isReleasableStory(InputInterface $input, OutputInterface $output, string $issueType): bool
+    {
+        if ($issueType === 'story') {
+            $question = new ConfirmationQuestion('Do you want to release this story without an epic? [<fg=yellow>yes</>|<fg=yellow>no</>] (<fg=green>enter: yes</>) ');
+            $helper = new QuestionHelper();
+
+            return $helper->ask($input, $output, $question);
+        }
+
+        return false;
+    }
+
+    /**
      * @param string $issue
      * @param string $summary
      *
@@ -113,8 +135,6 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
     }
 
     /**
-     * @group single
-     *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      * @param string $issue
@@ -122,18 +142,18 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
      *
      * @return array
      */
-    protected function createEpicBranchNames(InputInterface $input, OutputInterface $output, string $issue, string $summary): array
+    protected function createEpicOrStoryBranchNames(InputInterface $input, OutputInterface $output, string $issue, string $summary): array
     {
         $branchNames = [
             sprintf('feature/%s/master-%s', $issue, $summary),
         ];
 
-        $question = new ConfirmationQuestion('Should I also create an epic dev branch? [<fg=yellow>yes</>|<fg=yellow>no</>] (<fg=green>enter: yes</>) ');
+        $question = new ConfirmationQuestion('Should I also create an epic/story dev branch? [<fg=yellow>yes</>|<fg=yellow>no</>] (<fg=green>enter: yes</>) ');
         $helper = new QuestionHelper();
 
-        $epicDevShouldBeCreated = $helper->ask($input, $output, $question);
+        $epicOrStoryDevShouldBeCreated = $helper->ask($input, $output, $question);
 
-        if ($epicDevShouldBeCreated) {
+        if ($epicOrStoryDevShouldBeCreated) {
             $branchNames[] = sprintf('feature/%s/dev-%s', $issue, $summary);
         }
 

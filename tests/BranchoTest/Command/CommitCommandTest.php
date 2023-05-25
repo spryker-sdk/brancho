@@ -122,8 +122,6 @@ class CommitCommandTest extends Unit
     }
 
     /**
-     * @group single
-     *
      * @return void
      */
     public function testCommitCanBeAborted(): void
