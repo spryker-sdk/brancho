@@ -21,7 +21,7 @@
         "mikey179/vfsstream": "^1.6",
         "phpstan/phpstan": "^1.10",
         "spryker/code-sniffer": "^0.17.18",
-        "symfony/var-dumper": "^5.0"
+        "symfony/var-dumper": "^6.0"
     },
     "autoload": {
         "psr-4": {

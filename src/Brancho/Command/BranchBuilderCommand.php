@@ -85,8 +85,9 @@ class BranchBuilderCommand extends AbstractCommand
                 $resolvedBranchName,
                 getcwd(),
             ));
-
-            $shouldCreate = $this->getHelper('question')->ask($input, $output, $question);
+            /** @var \Symfony\Component\Console\Helper\QuestionHelper $helper */
+            $helper = $this->getHelper('question');
+            $shouldCreate = $helper->ask($input, $output, $question);
 
             if ($shouldCreate) {
                 $this->createBranch($resolvedBranchName);

@@ -46,8 +46,6 @@ class BranchBuilderCommandTest extends Unit
     /**
      * Tests that a correct bug fix branch name is created.
      *
-     * @example bugfix/rk-123-ticket-summary
-     *
      * @return void
      */
     public function testJiraBugIssueBranchNameCreation(): void
@@ -70,8 +68,6 @@ class BranchBuilderCommandTest extends Unit
 
     /**
      * Tests that a correct bug fix branch name is created.
-     *
-     * @example bugfix/rk-123-ticket-summary
      *
      * @return void
      */
