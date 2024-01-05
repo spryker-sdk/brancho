@@ -18,7 +18,7 @@ use Symfony\Component\Console\Question\Question;
 class JiraResolver extends AbstractResolver implements ConfigurableResolverInterface
 {
     /**
-     * @var string[]
+     * @var array<string>
      */
     protected $issueTypeMap = [
         'epic' => 'feature',
@@ -27,7 +27,7 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
     ];
 
     /**
-     * @var string[]
+     * @var array<string>
      */
     protected $issueTypeToPrefixMap = [
         'epic' => 'master',
@@ -45,46 +45,78 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
      */
     public function resolve(InputInterface $input, OutputInterface $output, ContextInterface $context): ?array
     {
-        $issue = $this->getIssue($input, $output);
+        $issueKey = $this->getIssue($input, $output);
 
         $filter = $context->getFilter();
         $config = $context->getConfig()['jira'];
 
-        $jiraIssue = $this->getFactory()->createJira()->getJiraIssue($issue, $config);
+        $jiraIssueData = $this->getFactory()->createJira()->getJiraIssue($issueKey, $config);
 
-        if (isset($jiraIssue['errorMessages'])) {
-            foreach ($jiraIssue['errorMessages'] as $errorMessage) {
+        if (isset($jiraIssueData['errorMessages'])) {
+            foreach ($jiraIssueData['errorMessages'] as $errorMessage) {
                 $output->writeln(sprintf('<fg=red>%s</>', $errorMessage));
             }
 
             return null;
         }
 
-        $issue = $filter->filter($issue);
-        $issueType = $filter->filter($jiraIssue['fields']['issuetype']['name']);
-        $summary = $filter->filter($jiraIssue['fields']['summary']);
+        $issueKey = $filter->filter($issueKey);
+        $issueType = $filter->filter($jiraIssueData['fields']['issuetype']['name']);
+        $issueSummary = $filter->filter($jiraIssueData['fields']['summary']);
 
         if ($issueType === 'bug') {
-            return (array)$this->createBugfixBranchName($issue, $summary);
+            return (array)$this->createBugfixBranchName($issueKey, $issueSummary);
         }
 
         if ($issueType === 'epic') {
-            return $this->createEpicBranchNames($input, $output, $issue, $summary);
+            return $this->createEpicOrStoryBranchNames($input, $output, $issueKey, $issueSummary);
         }
 
-        $epicOrStoryJiraIssue = $this->getParentJiraIssue($jiraIssue, $config);
-        $epicOrStoryIssue = $filter->filter($epicOrStoryJiraIssue['key']);
-        $epicOrStoryIssueType = $filter->filter($epicOrStoryJiraIssue['fields']['issuetype']['name']);
-        $issue = sprintf('%s/%s', $epicOrStoryIssue, $issue);
-
-        if ($issueType === 'sub-task' && $epicOrStoryIssueType !== 'epic') {
-            $epicJiraIssue = $this->getParentJiraIssue($epicOrStoryJiraIssue, $config);
-            $epicIssue = $filter->filter($epicJiraIssue['key']);
-
-            $issue = sprintf('%s/%s', $epicIssue, $issue);
+        if ($this->isReleasableStory($input, $output, $issueType)) {
+            return $this->createEpicOrStoryBranchNames($input, $output, $issueKey, $issueSummary);
         }
 
-        return (array)$this->createBranchName($issue, $summary);
+        $parentIssueData = $this->getParentJiraIssue($jiraIssueData, $config);
+        if (!$parentIssueData) {
+            $output->writeln('<comment>Warning: Ticket has no parent or epic branch.</>');
+        } else {
+            $parentIssueSlug = $filter->filter($parentIssueData['key']);
+            $parentIssueType = $filter->filter($parentIssueData['fields']['issuetype']['name']);
+
+            $issueKey = sprintf('%s/%s', $parentIssueSlug, $issueKey);
+
+            if ($issueType === 'sub-task' && $parentIssueType !== 'epic') {
+                $epicJiraIssue = $this->getParentJiraIssue($parentIssueData, $config);
+
+                if ($epicJiraIssue) {
+                    $epicIssue = $filter->filter($epicJiraIssue['key']);
+                    $issueKey = sprintf('%s/%s', $epicIssue, $issueKey);
+                }
+            }
+        }
+
+        return [
+            $this->createBranchName($issueKey, $issueSummary),
+        ];
+    }
+
+    /**
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param string $issueType
+     *
+     * @return bool
+     */
+    protected function isReleasableStory(InputInterface $input, OutputInterface $output, string $issueType): bool
+    {
+        if ($issueType === 'story') {
+            $question = new ConfirmationQuestion('Do you want to release this story without an epic? [<fg=yellow>yes</>|<fg=yellow>no</>] (<fg=green>enter: yes</>) ');
+            $helper = new QuestionHelper();
+
+            return $helper->ask($input, $output, $question);
+        }
+
+        return false;
     }
 
     /**
@@ -103,8 +135,6 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
     }
 
     /**
-     * @group single
-     *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      * @param string $issue
@@ -112,18 +142,18 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
      *
      * @return array
      */
-    protected function createEpicBranchNames(InputInterface $input, OutputInterface $output, string $issue, string $summary): array
+    protected function createEpicOrStoryBranchNames(InputInterface $input, OutputInterface $output, string $issue, string $summary): array
     {
         $branchNames = [
             sprintf('feature/%s/master-%s', $issue, $summary),
         ];
 
-        $question = new ConfirmationQuestion('Should I also create an epic dev branch? [<fg=yellow>yes</>|<fg=yellow>no</>] (<fg=green>enter: yes</>) ');
+        $question = new ConfirmationQuestion('Should I also create an epic/story dev branch? [<fg=yellow>yes</>|<fg=yellow>no</>] (<fg=green>enter: yes</>) ');
         $helper = new QuestionHelper();
 
-        $epicDevShouldBeCreated = $helper->ask($input, $output, $question);
+        $epicOrStoryDevShouldBeCreated = $helper->ask($input, $output, $question);
 
-        if ($epicDevShouldBeCreated) {
+        if ($epicOrStoryDevShouldBeCreated) {
             $branchNames[] = sprintf('feature/%s/dev-%s', $issue, $summary);
         }
 
@@ -205,26 +235,28 @@ class JiraResolver extends AbstractResolver implements ConfigurableResolverInter
      * @param array $jiraIssue
      * @param array $config
      *
-     * @return array
+     * @return array|null
      */
-    protected function getParentJiraIssue(array $jiraIssue, array $config): array
+    protected function getParentJiraIssue(array $jiraIssue, array $config): ?array
     {
+        $parentIssue = $this->getParentIssue($jiraIssue);
+
+        if (!$parentIssue) {
+            return null;
+        }
+
         return $this->getFactory()
             ->createJira()
-            ->getJiraIssue($this->getParentIssue($jiraIssue), $config);
+            ->getJiraIssue($parentIssue, $config);
     }
 
     /**
      * @param array $jiraIssue
      *
-     * @return string
+     * @return string|null
      */
-    protected function getParentIssue(array $jiraIssue): string
+    protected function getParentIssue(array $jiraIssue): ?string
     {
-        if (isset($jiraIssue['fields']['customfield_10008'])) {
-            return $jiraIssue['fields']['customfield_10008'];
-        }
-
-        return $jiraIssue['fields']['parent']['key'];
+        return $jiraIssue['fields']['customfield_10008'] ?? $jiraIssue['fields']['parent']['key'] ?? null;
     }
 }

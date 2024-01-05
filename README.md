@@ -72,3 +72,19 @@ Through the `\Brancho\Context\ContextInterface` you get access to the configurat
 ### Filters
 
 Filters are used to filter user input into a normalized format. Think of a user input which is copied from somewhere e.g. an issue name or a short description. Usually these contain whitespaces and capital letters which are not allowed in git branch names.
+
+## Get Jira API token
+
+Go to https://id.atlassian.com/manage-profile/security/api-tokens and create a new API token.
+
+## Example configuration
+
+```
+resolver: \Brancho\Resolver\JiraResolver
+filters:
+    - \Brancho\Filter\Slugify
+jira:
+    host: https://spryker.atlassian.net/
+    username: foo.bar@spryker.com
+    password: {YOUR-API-TOKEN}
+```

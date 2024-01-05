@@ -7,11 +7,6 @@
 
 namespace BranchoTest\Command;
 
-use Brancho\BranchoFactory;
-use Brancho\Command\BranchBuilderCommand;
-use Brancho\Jira\Jira;
-use Brancho\Resolver\ResolverDecorator;
-use Codeception\Stub;
 use Codeception\Test\Unit;
 use org\bovigo\vfs\vfsStream;
 
@@ -35,7 +30,7 @@ class BranchBuilderCommandTest extends Unit
     public function testBranchCreationWithTheDescriptionResolver(): void
     {
         // Arrange
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
+        $branchBuilderCommandMock = $this->tester->createBranchBuilderCommandMock();
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
         $commandTester->setInputs(['Branch description']);
@@ -49,20 +44,6 @@ class BranchBuilderCommandTest extends Unit
     }
 
     /**
-     * @return \Brancho\Command\BranchBuilderCommand
-     */
-    protected function createBranchBuilderCommandMock(): BranchBuilderCommand
-    {
-        /** @var \Brancho\Command\BranchBuilderCommand $branchBuilderCommandMock */
-        $branchBuilderCommandMock = Stub::construct(BranchBuilderCommand::class, [], [
-            'createBranch' => function () {
-            },
-        ]);
-
-        return $branchBuilderCommandMock;
-    }
-
-    /**
      * Tests that a correct bug fix branch name is created.
      *
      * @example bugfix/rk-123-ticket-summary
@@ -72,21 +53,9 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraBugIssueBranchNameCreation(): void
     {
         // Arrange
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => function () {
-                return include codecept_data_dir('jira-bug-response.php');
-            },
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-bug-response.php',
         ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => function () use ($jiraMock) {
-                return $jiraMock;
-            },
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
         $commandTester->setInputs(['rk-123']);
@@ -109,21 +78,9 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraIssueMustBeAValidIssue(): void
     {
         // Arrange
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => function () {
-                return include codecept_data_dir('jira-bug-response.php');
-            },
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-bug-response.php',
         ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => function () use ($jiraMock) {
-                return $jiraMock;
-            },
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
         $commandTester->setInputs(['', 'rk-123']); // first input is invalid
@@ -145,21 +102,9 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraBugIssueBranchNameCreationWithIssueArgument(): void
     {
         // Arrange
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => function () {
-                return include codecept_data_dir('jira-bug-response.php');
-            },
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-bug-response.php',
         ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => function () use ($jiraMock) {
-                return $jiraMock;
-            },
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
 
@@ -177,21 +122,9 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraEpicMasterIssueBranchNameCreation(): void
     {
         // Arrange
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => function () {
-                return include codecept_data_dir('jira-epic-response.php');
-            },
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-epic-response.php',
         ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => function () use ($jiraMock) {
-                return $jiraMock;
-            },
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
 
@@ -209,21 +142,9 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraEpicDevIssueBranchShouldBeCreatedIfRequired(): void
     {
         // Arrange
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => function () {
-                return include codecept_data_dir('jira-epic-response.php');
-            },
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-epic-response.php',
         ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => function () use ($jiraMock) {
-                return $jiraMock;
-            },
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
 
@@ -234,10 +155,6 @@ class BranchBuilderCommandTest extends Unit
         // Assert
         $this->assertStringContainsString('feature/rk-123/master-epic-summary', $commandTester->getDisplay());
         $this->assertStringContainsString('"feature/rk-123/master-epic-summary" created.', $commandTester->getDisplay());
-
-        // Assert
-        $this->assertStringContainsString('feature/rk-123/dev-epic-summary', $commandTester->getDisplay());
-        $this->assertStringContainsString('"feature/rk-123/dev-epic-summary" created.', $commandTester->getDisplay());
     }
 
     /**
@@ -246,21 +163,9 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraEpicDevIssueBranchShouldNotBeCreatedIfNotRequired(): void
     {
         // Arrange
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => function () {
-                return include codecept_data_dir('jira-epic-response.php');
-            },
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-epic-response.php',
         ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => function () use ($jiraMock) {
-                return $jiraMock;
-            },
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
 
@@ -271,10 +176,6 @@ class BranchBuilderCommandTest extends Unit
         // Assert
         $this->assertStringContainsString('feature/rk-123/master-epic-summary', $commandTester->getDisplay());
         $this->assertStringContainsString('"feature/rk-123/master-epic-summary" created.', $commandTester->getDisplay());
-
-        // Assert
-        $this->assertStringNotContainsString('feature/rk-123/dev-epic-summary', $commandTester->getDisplay());
-        $this->assertStringNotContainsString('"feature/rk-123/dev-epic-summary" created.', $commandTester->getDisplay());
     }
 
     /**
@@ -285,29 +186,67 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraStoryIssueBranchNameCreation(): void
     {
         // Arrange
-        $storyResponse = include codecept_data_dir('jira-story-response.php');
-        $epicResponse = include codecept_data_dir('jira-epic-response.php');
-
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => Stub::consecutive($storyResponse, $epicResponse),
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-story-response.php',
+            'jira-epic-response.php',
         ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => function () use ($jiraMock) {
-                return $jiraMock;
-            },
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
 
         // Act
+        $commandTester->setInputs(['n']);
         $commandTester->execute(['issue' => 'rk-231', '--config' => codecept_data_dir('pattern-jira.yml')]);
 
         // Assert
+        $this->assertStringContainsString('"feature/rk-123/rk-231-story-summary" created.', $commandTester->getDisplay());
+    }
+
+    /**
+     * Story: Tests branch name consists of two tickets, the story and the parent epic.
+     *
+     * @return void
+     */
+    public function testJiraStoryCreatesBranchNameForReleasableStoryWhenIssueTypeIsAStoryAndUserSetItToBeReleasable(): void
+    {
+        // Arrange
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-story-response.php',
+            'jira-epic-response.php',
+        ]);
+
+        $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
+
+        // Act
+        $commandTester->setInputs(['y', 'n']);
+        $commandTester->execute(['issue' => 'rk-231', '--config' => codecept_data_dir('pattern-jira.yml')]);
+
+        // Assert
+        $this->assertStringContainsString('Do you want to release this story without an epic?', $commandTester->getDisplay());
+        $this->assertStringContainsString('"feature/rk-231/master-story-summary" created.', $commandTester->getDisplay());
+    }
+
+    /**
+     * @group single
+     * Story: Tests branch name consists of two tickets, the story and the parent epic.
+     *
+     * @return void
+     */
+    public function testJiraStoryCreatesDefaultBranchNameForStoryWhenIssueTypeIsAStoryAndUserSetItToNotBeReleasable(): void
+    {
+        // Arrange
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-story-response.php',
+            'jira-epic-response.php',
+        ]);
+
+        $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
+
+        // Act
+        $commandTester->setInputs(['n', 'y']);
+        $commandTester->execute(['issue' => 'rk-231', '--config' => codecept_data_dir('pattern-jira.yml')]);
+
+        // Assert
+        $this->assertStringContainsString('Do you want to release this story without an epic?', $commandTester->getDisplay());
         $this->assertStringContainsString('"feature/rk-123/rk-231-story-summary" created.', $commandTester->getDisplay());
     }
 
@@ -319,22 +258,10 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraTaskIssueBranchNameCreation(): void
     {
         // Arrange
-        $taskResponse = include codecept_data_dir('jira-task-response.php');
-        $epicResponse = include codecept_data_dir('jira-epic-response.php');
-
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => Stub::consecutive($taskResponse, $epicResponse),
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-task-response.php',
+            'jira-epic-response.php',
         ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => function () use ($jiraMock) {
-                return $jiraMock;
-            },
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
 
@@ -351,23 +278,11 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraSubTaskIssueBranchNameCreation(): void
     {
         // Arrange
-        $subTaskResponse = include codecept_data_dir('jira-sub-task-response.php');
-        $taskResponse = include codecept_data_dir('jira-task-response.php');
-        $epicResponse = include codecept_data_dir('jira-epic-response.php');
-
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => Stub::consecutive($subTaskResponse, $taskResponse, $epicResponse),
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-sub-task-response.php',
+            'jira-task-response.php',
+            'jira-epic-response.php',
         ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => function () use ($jiraMock) {
-                return $jiraMock;
-            },
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
 
@@ -384,27 +299,14 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraWillAskForConfigurationWhenConfigDoesNotExist(): void
     {
         // Arrange
-        $taskResponse = include codecept_data_dir('jira-task-response.php');
-        $epicResponse = include codecept_data_dir('jira-epic-response.php');
-
         $rootDirectoryMock = vfsStream::setup();
-
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => Stub::consecutive($taskResponse, $epicResponse),
-        ]);
-
-        $resolverDecoratorMock = Stub::make(ResolverDecorator::class, [
-            'getRootDirectory' => $rootDirectoryMock->url(),
-        ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => $jiraMock,
-            'createResolverDecorator' => $resolverDecoratorMock,
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock(
+            [
+                'jira-task-response.php',
+                'jira-epic-response.php',
+            ],
+            $rootDirectoryMock,
+        );
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
         $commandTester->setInputs(['https://spryker.atlassian.net', 'Spryker', 'api-key']);
@@ -413,10 +315,69 @@ class BranchBuilderCommandTest extends Unit
         $commandTester->execute(['issue' => 'rk-321', '--config' => codecept_data_dir('pattern-jira-without-config.yml')]);
 
         // Assert
-        $this->assertStringContainsString('Please enter the host of your Jira e.g. https://spryker.atlassian.net', $commandTester->getDisplay());
-        $this->assertStringContainsString('Please enter your Jira username', $commandTester->getDisplay());
-        $this->assertStringContainsString('Please enter you Jira API key, you can get one here https://id.atlassian.com/manage-profile/security/api-tokens', $commandTester->getDisplay());
+        $this->tester->assertCommandAskedCredentials($commandTester);
+
         $this->assertStringContainsString('"feature/rk-123/rk-321-task-summary" created.', $commandTester->getDisplay());
+
+        $this->assertTrue($rootDirectoryMock->hasChild('.brancho.local'));
+    }
+
+    /**
+     * @return void
+     */
+    public function testJiraWillAskForContinueIfTaskDoesNotHaveParent(): void
+    {
+        // Arrange
+        $rootDirectoryMock = vfsStream::setup();
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock(
+            [
+                'jira-task-response-without-epic.php',
+            ],
+            $rootDirectoryMock,
+        );
+
+        $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
+        $commandTester->setInputs(['https://spryker.atlassian.net', 'Spryker', 'api-key', 'yes']);
+
+        // Act
+        $commandTester->execute(['issue' => 'rk-321', '--config' => codecept_data_dir('pattern-jira-without-config.yml')]);
+
+        // Assert
+        $this->tester->assertCommandAskedCredentials($commandTester);
+
+        $this->assertStringContainsString('Warning: Ticket has no parent or epic branch.', $commandTester->getDisplay());
+        $this->assertStringContainsString('Should I create the branch "feature/rk-321-task-summary"', $commandTester->getDisplay());
+        $this->assertStringContainsString('"feature/rk-321-task-summary" created.', $commandTester->getDisplay());
+
+        $this->assertTrue($rootDirectoryMock->hasChild('.brancho.local'));
+    }
+
+    /**
+     * @return void
+     */
+    public function testJiraShouldNotCreateBranchIfDoesNotHaveParentAndCreationNotAllowed(): void
+    {
+        // Arrange
+        $rootDirectoryMock = vfsStream::setup();
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock(
+            [
+                'jira-task-response-without-epic.php',
+            ],
+            $rootDirectoryMock,
+        );
+
+        $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
+        $commandTester->setInputs(['https://spryker.atlassian.net', 'Spryker', 'api-key', 'no']);
+
+        // Act
+        $commandTester->execute(['issue' => 'rk-321', '--config' => codecept_data_dir('pattern-jira-without-config.yml')]);
+
+        // Assert
+        $this->tester->assertCommandAskedCredentials($commandTester);
+
+        $this->assertStringContainsString('Warning: Ticket has no parent or epic branch.', $commandTester->getDisplay());
+        $this->assertStringContainsString('Should I create the branch "feature/rk-321-task-summary"', $commandTester->getDisplay());
+        $this->assertStringNotContainsString('"feature/rk-321/dev-task-summary" created.', $commandTester->getDisplay());
 
         $this->assertTrue($rootDirectoryMock->hasChild('.brancho.local'));
     }
@@ -427,31 +388,18 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraWillAskForConfigurationAndAppendsItToAnExistingLocalConfiguration(): void
     {
         // Arrange
-        $taskResponse = include codecept_data_dir('jira-task-response.php');
-        $epicResponse = include codecept_data_dir('jira-epic-response.php');
-
         $rootDirectoryMock = vfsStream::setup();
-
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => Stub::consecutive($taskResponse, $epicResponse),
-        ]);
-
-        $resolverDecoratorMock = Stub::make(ResolverDecorator::class, [
-            'getRootDirectory' => $rootDirectoryMock->url(),
-        ]);
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock(
+            [
+                'jira-task-response.php',
+                'jira-epic-response.php',
+            ],
+            $rootDirectoryMock,
+        );
 
         // Add an existing config file where we want to add the new config to.
         $mockedBranchoLocalPath = $rootDirectoryMock->url() . '/.brancho.local';
         file_put_contents($mockedBranchoLocalPath, 'key: value');
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => $jiraMock,
-            'createResolverDecorator' => $resolverDecoratorMock,
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
         $commandTester->setInputs(['https://spryker.atlassian.net', 'Spryker', 'api-key']);
@@ -460,9 +408,8 @@ class BranchBuilderCommandTest extends Unit
         $commandTester->execute(['issue' => 'rk-321', '--config' => codecept_data_dir('pattern-jira-without-config.yml')]);
 
         // Assert
-        $this->assertStringContainsString('Please enter the host of your Jira e.g. https://spryker.atlassian.net', $commandTester->getDisplay());
-        $this->assertStringContainsString('Please enter your Jira username', $commandTester->getDisplay());
-        $this->assertStringContainsString('Please enter you Jira API key, you can get one here https://id.atlassian.com/manage-profile/security/api-tokens', $commandTester->getDisplay());
+        $this->tester->assertCommandAskedCredentials($commandTester);
+
         $this->assertStringContainsString('"feature/rk-123/rk-321-task-summary" created.', $commandTester->getDisplay());
 
         $this->assertTrue($rootDirectoryMock->hasChild('.brancho.local'));
@@ -476,27 +423,14 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraSubTaskWithEpicParentInsteadOfExpectedTaskParent(): void
     {
         // Arrange
-        $taskResponse = include codecept_data_dir('jira-sub-task-response.php');
-        $epicResponse = include codecept_data_dir('jira-epic-response.php');
-
         $rootDirectoryMock = vfsStream::setup();
-
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => Stub::consecutive($taskResponse, $epicResponse),
-        ]);
-
-        $resolverDecoratorMock = Stub::make(ResolverDecorator::class, [
-            'getRootDirectory' => $rootDirectoryMock->url(),
-        ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => $jiraMock,
-            'createResolverDecorator' => $resolverDecoratorMock,
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock(
+            [
+                'jira-sub-task-response.php',
+                'jira-epic-response.php',
+            ],
+            $rootDirectoryMock,
+        );
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
 
@@ -515,21 +449,9 @@ class BranchBuilderCommandTest extends Unit
     public function testJiraOutputsErrorMessageInCaseOfError(): void
     {
         // Arrange
-        $jiraMock = Stub::make(Jira::class, [
-            'getJiraIssue' => function () {
-                return include codecept_data_dir('jira-error-response.php');
-            },
+        $branchBuilderCommandMock = $this->tester->haveBranchBuilderCommandMock([
+            'jira-error-response.php',
         ]);
-
-        /** @var \Brancho\BranchoFactory $factoryMock */
-        $factoryMock = Stub::make(BranchoFactory::class, [
-            'createJira' => function () use ($jiraMock) {
-                return $jiraMock;
-            },
-        ]);
-
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
-        $branchBuilderCommandMock->setFactory($factoryMock);
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
         $commandTester->setInputs(['rk-123']);
@@ -540,7 +462,7 @@ class BranchBuilderCommandTest extends Unit
         // Assert
         $this->assertStringContainsString(
             'Issue does not exist or you do not have permission to see it.',
-            $commandTester->getDisplay()
+            $commandTester->getDisplay(),
         );
     }
 
@@ -550,7 +472,7 @@ class BranchBuilderCommandTest extends Unit
     public function testExecuteOnlyShowsBranchNameWhenUserAnswerWithNoForCreation(): void
     {
         // Arrange
-        $branchBuilderCommandMock = $this->createBranchBuilderCommandMock();
+        $branchBuilderCommandMock = $this->tester->createBranchBuilderCommandMock();
 
         $commandTester = $this->tester->getConsoleTester($branchBuilderCommandMock);
         $commandTester->setInputs(['Branch description', 'n']);

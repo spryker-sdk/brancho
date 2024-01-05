@@ -15,11 +15,34 @@ use Symfony\Component\Process\Process;
 
 class CommitCommand extends AbstractCommand
 {
+    /**
+     * @var string
+     */
     public const OPTION_MESSAGE_SHORT = 'm';
+
+    /**
+     * @var string
+     */
     public const OPTION_MESSAGE = 'message';
+
+    /**
+     * @var string
+     */
     public const OPTION_CONFIG = 'config';
+
+    /**
+     * @var string
+     */
     public const OPTION_CONFIG_SHORTCUT = 'c';
+
+    /**
+     * @var string
+     */
     public const OPTION_COMMIT_ALL = 'all';
+
+    /**
+     * @var string
+     */
     public const OPTION_COMMIT_ALL_SHORT = 'a';
 
     /**
@@ -35,7 +58,7 @@ class CommitCommand extends AbstractCommand
                 static::OPTION_CONFIG_SHORTCUT,
                 InputOption::VALUE_REQUIRED,
                 'Path to a configuration file (default: .brancho)',
-                ROOT_DIR . '/.brancho'
+                ROOT_DIR . '/.brancho',
             )
             ->setDescription('Commits branch changes and prefixes the commit message with the current Jira issue.');
     }
@@ -74,7 +97,7 @@ class CommitCommand extends AbstractCommand
         $question = new ConfirmationQuestion(sprintf(
             'Should I commit with message "<info>%s</>" for you in "<info>%s</>"?  [<fg=yellow>yes</>|<fg=yellow>no</>] (<fg=green>enter: yes</>) ',
             $resolvedCommitMessage,
-            getcwd()
+            getcwd(),
         ));
 
         $shouldCreate = $this->getHelper('question')->ask($input, $output, $question);
