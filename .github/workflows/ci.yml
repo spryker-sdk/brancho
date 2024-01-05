@@ -46,13 +46,6 @@ jobs:
             - name: Codecept run
               run: vendor/bin/codecept run --coverage-xml
 
-            - name: Upload coverage results to Coveralls
-              env:
-                  COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  composer global require php-coveralls/php-coveralls
-                  php-coveralls --coverage_clover=tests/_output/coverage.xml --json_path=tests/_output/coveralls-upload.json -vvv
-
             - name: Code Coverage Report
               if: success() && matrix.php-version == '8.0'
               uses: codecov/codecov-action@v1
