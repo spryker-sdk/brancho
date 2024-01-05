@@ -13,13 +13,13 @@ coverage:
 suites:
     Command:
         path: BranchoTest/Command
-        class_name: CommandTester
+        actor: CommandTester
         modules:
             enabled:
                 - \BranchoTest\Helper\CommandHelper
     Brancho:
         path: BranchoTest/Brancho
-        class_name: BranchoTester
+        actor: BranchoTester
         modules:
             enabled:
 extensions:
