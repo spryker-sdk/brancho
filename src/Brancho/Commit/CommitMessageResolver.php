@@ -36,8 +36,10 @@ class CommitMessageResolver implements CommitMessageResolverInterface
 
         if (preg_match_all('/([a-z]+\-[0-9]+)/', $branchName, $matches, PREG_SET_ORDER)) {
             $message = rtrim($this->getMessage($input, $output, $context), '.');
+            /** @var array<int, string> $branchParts */
+            $branchParts = array_pop($matches);
 
-            return sprintf('%s %s.', strtoupper(array_pop($matches)[0]), $message);
+            return sprintf('%s %s.', strtoupper($branchParts[0]), $message);
         }
 
         return null;

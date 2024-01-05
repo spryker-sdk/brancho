@@ -19,8 +19,8 @@
         "codeception/module-asserts": "^1.1",
         "codeception/module-phpbrowser": "^1.0.0",
         "mikey179/vfsstream": "^1.6",
-        "phpstan/phpstan": "^0.12.18",
-        "spryker/code-sniffer": "*",
+        "phpstan/phpstan": "^1.10",
+        "spryker/code-sniffer": "^0.17.18",
         "symfony/var-dumper": "^5.0"
     },
     "autoload": {

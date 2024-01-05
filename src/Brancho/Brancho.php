@@ -104,6 +104,7 @@ class Brancho
      */
     protected function getResolver(array $config): ResolverInterface
     {
+        /** @var \Brancho\Resolver\ResolverInterface $resolver */
         $resolver = new $config[Config::RESOLVER]();
 
         if ($resolver instanceof AbstractResolver) {
@@ -128,6 +129,7 @@ class Brancho
     protected function getFilter(array $config): FilterChain
     {
         $filterChain = new FilterChain();
+        /** @var \Laminas\Filter\FilterInterface $filter */
         foreach ($config[Config::FILTERS] as $filter) {
             $filterChain->attach(new $filter());
         }
