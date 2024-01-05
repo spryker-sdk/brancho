@@ -12,7 +12,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-version: ['7.3', '8.0']
+                php-version: ['8.0', '8.2']
 
         steps:
             - name: Setup PHP
@@ -47,16 +47,16 @@ jobs:
               run: vendor/bin/codecept run --coverage-xml
 
             - name: Code Coverage Report
-              if: success() && matrix.php-version == '7.3'
+              if: success() && matrix.php-version == '8.0'
               uses: codecov/codecov-action@v1
               with:
-                file: ./tests/_output/coverage.xml
+                  file: ./tests/_output/coverage.xml
 
     checks:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-version: ['7.3', '8.0']
+                php-version: ['8.0', '8.2']
 
         steps:
             - name: Setup PHP
