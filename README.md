@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/spryker-sdk/brancho/workflows/CI/badge.svg?branch=master)](https://github.com/spryker-sdk/brancho/actions?query=workflow%3ACI+branch%3Amaster)
 [![codecov](https://codecov.io/gh/spryker-sdk/brancho/branch/master/graph/badge.svg?token=L1thFB9nOG)](https://codecov.io/gh/spryker-sdk/brancho)
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg)](https://php.net/)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.0-8892BF.svg)](https://php.net/)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat)](https://phpstan.org/)
 
 Brancho is a tool that helps to create branches with a defined naming convention. It is also capable of committing your changes.
