@@ -12,7 +12,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-version: ['8.0', '8.2', '8.3']
+                php-version: ['8.3', '8.5']
 
         steps:
             - name: Setup PHP
@@ -23,7 +23,7 @@ jobs:
                   coverage: pcov
 
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v5
 
             - name: Composer get cache directory
               id: composer-cache
@@ -31,7 +31,7 @@ jobs:
                   echo "::set-output name=dir::$(composer config cache-files-dir)"
 
             - name: Composer cache
-              uses: actions/cache@v2
+              uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -66,7 +66,7 @@ jobs:
                   extensions: mbstring, intl
 
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v5
 
             - name: Composer validate
               run: composer validate
@@ -77,7 +77,7 @@ jobs:
                   echo "::set-output name=dir::$(composer config cache-files-dir)"
 
             - name: Composer cache
-              uses: actions/cache@v2
+              uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
